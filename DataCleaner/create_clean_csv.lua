@@ -56,9 +56,18 @@ local function split(input_string, delimeter)
         start_index = start_index + 1
         start_index, end_index = string.find(input_string, "[^" .. delimeter .."]*", start_index)
 
-        if start_index == nil or end_index == nil then break end
-        
-        table.insert(results, string.sub(input_string, start_index, end_index))
+        if start_index == nil or end_index == nil then 
+            break 
+        end
+
+        if end_index < start_index then
+            table.insert(results, "")
+            end_index = start_index
+        else
+            local substr = string.sub(input_string, start_index, end_index)
+            table.insert(results, substr)
+        end
+
         start_index = string.find(input_string, delimeter, end_index)
 
     until start_index == nil
@@ -96,7 +105,7 @@ local function write_participants_result_to_file(file_handle, results)
 
     key_delay_avg = math.floor(key_delay_total / key_count)
     for _, row in ipairs(results) do
-        
+
         file_handle:write(row[1] .. "," .. row[2] .. "," .. row[3] .. "," .. row[4] .. "," .. row[5] .. "," .. key_delay_avg .. "\n")
     end
 
@@ -112,8 +121,12 @@ local function main()
     local result_file = create_result_file()
     if result_file == nil then print("Failed to create result file"); return end
     
-    
-    for _, filename in pairs(filenames) do repeat
+    local total_number_of_files = #filenames
+    local max_tries = 99999
+    for i, filename in ipairs(filenames) do repeat
+
+        print("[ ".. math.floor(100 * i / total_number_of_files) .."% ] Processing file " .. filename .. " (" .. i .. " / " .. total_number_of_files .. ")")
+
         local file_lines = get_file_lines("../Data/raw/" .. filename)
         if file_lines == nil then print("Failed to load file with filename: " .. filename); break end
     
@@ -122,13 +135,13 @@ local function main()
         local previous_character_code, current_character_code, is_overlapping, time_held, time_since_key_press
         local previous_line, current_line
     
+        
         local participants_results = {}
     
         for index, line in ipairs(file_lines) do repeat
             if index == 1 then
                 break    
             end
-
             current_line = split(line, "\t")
     
             if previous_line ~= nil and current_line[data_keys.TEST_SECTION_ID] ~= previous_line[data_keys.TEST_SECTION_ID] then
@@ -164,5 +177,16 @@ local function main()
 
 end
 
+-- local good_one = split("100045	1091643	A bad thing has been turned into a good thing and.	A bad thing has been turned into a good thing and.	51922976	1473275800436	1473275800856	SHIFT	16", "\t")
+-- local bad_one = split("100045	1091643	A bad thing has been turned into a good thing and.	A bad thing has been turned into a good thing and.	51922981	1473275800790	1473275800870		65", "\t")
+
+-- for index, value in ipairs(good_one) do
+--     print("VALUE I: " .. index .. " | VALUE: " .. value)
+-- end
+
+
+-- for index, value in ipairs(bad_one) do
+--     print("VALUE I: " .. index .. " | VALUE: " .. value)
+-- end
 
 main()
