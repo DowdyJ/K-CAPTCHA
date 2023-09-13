@@ -15,6 +15,8 @@ data_keys.RELEASE_TIME = 7
 data_keys.LETTER = 8
 data_keys.KEYCODE = 9
 
+data_keys.COUNT = 9
+
 
 local function get_txt_file_names_in_raw_directory()
     local output = io.popen("ls -a ../Data/raw/")
@@ -90,6 +92,27 @@ local function get_file_lines(filename)
     return file_lines
 end
 
+-- local function preprocess_errors(file_lines)
+--     local new_lines = {}
+    
+--     for index, line in ipairs(file_lines) do
+--         if string.match(line, "^\t") then
+--             print("old version: " .. string.gsub(new_lines[#new_lines],"\t", "|"))
+--             new_lines[#new_lines] = string.sub(new_lines[#new_lines], 0, string.len(new_lines[#new_lines])) .. line
+--             print("new version: " .. string.gsub(string.gsub(new_lines[#new_lines],"\t", "|"), "\n", "#"))
+--         else
+--             table.insert(new_lines, line)
+--         end
+--     end
+
+--     file_lines = new_lines
+
+
+--     for index, value in ipairs(new_lines) do
+--         print(value)
+--     end
+-- end
+
 
 ---comment
 ---@param file_handle file*
@@ -130,7 +153,8 @@ local function main()
         local file_lines = get_file_lines("../Data/raw/" .. filename)
         if file_lines == nil then print("Failed to load file with filename: " .. filename); break end
     
-    
+        --preprocess_errors(file_lines)
+        
         -- Create data entry for clean CSV
         local previous_character_code, current_character_code, is_overlapping, time_held, time_since_key_press
         local previous_line, current_line
@@ -143,6 +167,10 @@ local function main()
                 break    
             end
             current_line = split(line, "\t")
+            
+            if #current_line ~= data_keys.COUNT then
+                break
+            end
     
             if previous_line ~= nil and current_line[data_keys.TEST_SECTION_ID] ~= previous_line[data_keys.TEST_SECTION_ID] then
                 previous_line = nil
