@@ -1,1 +1,3 @@
 keyInputEnv/**
+__pycache__/**
+localVenv/**
