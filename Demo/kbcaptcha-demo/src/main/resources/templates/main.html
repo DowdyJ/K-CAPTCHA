@@ -6,7 +6,7 @@
         <title>KB-CAPTCHA Demo</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" th:href="@{/css/styles.css}">
+        <link rel="stylesheet" href="./../static/css/styles.css" th:href="@{/css/styles.css}">
     </head>
     <body>
         <nav>
@@ -18,9 +18,15 @@
         <main>           
             <h1>KB-CAPTCHA Demo</h1>
             <p>Welcome to the demo for the KB-CAPTCHA solution! </p>
-            <div><label for="textbox">Take the test!</label></div>
-            <input id="textbox" type="text" />
+            <div>
+                <div>
+                    <label for="textbox">Take the test!</label>
+                </div>
+                <input id="textbox" type="text" />
+                <button id="submit-data">ARE YOU A ROBOT?</button>
+            </div>
+            
         </main>
-        <script src="" async defer></script>
+        <script th:src="@{/js/mainpage.js}" async defer></script>
     </body>
 </html>
