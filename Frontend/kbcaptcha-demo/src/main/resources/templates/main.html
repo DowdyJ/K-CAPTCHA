@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>KB-CAPTCHA Demo</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="./../static/css/styles.css" th:href="@{/css/styles.css}">
+    </head>
+    <body>
+        <nav>
+            <a href="/about">About KB-CAPTCHA</a>
+            <a href="https://github.com/DowdyJ/KB-CAPTCHA/tree/main" target="_blank">Source Code</a>
+            <a id="contact-link" href="mailto:joeldowdy12@gmail.com">Contact</a>
+        </nav>
+
+        <main>           
+            <h1>KB-CAPTCHA Demo</h1>
+            <p>Welcome to the demo for the KB-CAPTCHA solution! </p>
+            <div>
+                <div>
+                    <label for="textbox">Take the test!</label>
+                </div>
+                <input id="textbox" type="text" />
+                <button id="submit-data">ARE YOU A ROBOT?</button>
+            </div>
+            
+        </main>
+        <script th:src="@{/js/mainpage.js}" async defer></script>
+    </body>
+</html>
