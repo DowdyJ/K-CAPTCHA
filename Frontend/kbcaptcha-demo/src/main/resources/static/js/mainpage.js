@@ -95,11 +95,15 @@ function processAndSendData() {
         },
         body: JSON.stringify(results)
     })
-    .then((response) => {
+    .then((response) => response.json())
+    .then((data) => {
         results = [];
+        console.log(data);
+        document.querySelector("#score-field").innerHTML = data["score"];
     });
 }
 
 document.querySelector("#submit-data").addEventListener("click", () => {
     processAndSendData();
+    document.querySelector("#textbox").value = "";
 });

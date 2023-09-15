@@ -21,11 +21,13 @@ import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import dev.sugaroflead.kbcaptchademo.model.KeyboardData;
@@ -45,6 +47,8 @@ public class KeyboardDataController {
         //         ",\t SLKTime: " + kbd.time_since_last_keypress +
         //         ",\t AvgTime: " + kbd.average_time_between_strokes);
         // }
+        Map<String, String> response = new HashMap<>();
+
 
         ObjectMapper objectMapper = new ObjectMapper();
     
@@ -75,6 +79,10 @@ public class KeyboardDataController {
             };
 
             String responseBody = httpClient.execute(post, responseHandler);
+            Map<String, Double> resultMap = objectMapper.readValue(responseBody, Map.class);
+            Double botLikelihood = resultMap.get("result");
+
+            response.put("score", Math.floor(botLikelihood * 100) + "");
             System.out.println(responseBody);
         }
         catch (Exception e) {
@@ -82,7 +90,6 @@ public class KeyboardDataController {
         }
 
 
-        Map<String, String> response = new HashMap<>();
         response.put("status", "success");
 
         return new ResponseEntity<Map<String,String>>(response, HttpStatus.CREATED);

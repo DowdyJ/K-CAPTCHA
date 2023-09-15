@@ -1,3 +1,2 @@
-keyInputEnv/**
 __pycache__/**
-localVenv/**
+.venv/**
