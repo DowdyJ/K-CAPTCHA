@@ -29,11 +29,15 @@ class KeyboardAnalyzer:
             model = IsolationForest(contamination=0.01)
 
             model.fit(data)
-
+            print("Saving to file...")
             with open(KeyboardAnalyzer.model_filename, 'wb') as model_file:
                 pickle.dump(model, model_file)
 
+            print("Finished.")
+
 
     def load_model(this):
+        print("Model file found. Loading from disk...")
         with open(KeyboardAnalyzer.model_filename, 'rb') as model_file:
             this.model = pickle.load(model_file)
+        print("Finished.")
