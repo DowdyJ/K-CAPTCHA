@@ -1,3 +1,4 @@
 !Data/processed/.gitkeep
 !Data/raw/.gitkeep
 Data/**
+.vscode/**
