@@ -12,4 +12,6 @@ done
 
 rmdir -p Keystrokes/files/
 rm Keystrokes.zip
+rm metadata_participants.txt
+rm readme.txt
 echo "Finished."
