@@ -199,7 +199,6 @@ let sampleSentences = [
 "How much more grievous are the consequences of anger than the causes of it.",
 "Receive without conceit, release without struggle.",
 "It never ceases to amaze me: we all love ourselves more than other people, but care more about their opinion than our own.",
-"Death smiles at us all; all we can do is smile back.",
 "Take full account of what Excellencies you possess, and in gratitude remember how you would hanker after them, if you had them not.",
 "Death is a release from the impressions of the senses, and from desires that make us their puppets, and from the vagaries of the mind, and from the hard service of the flesh.",
 "Adapt yourself to the life you have been given; and truly love the people with whom destiny has surrounded you.",

@@ -202,4 +202,26 @@ input#textbox {
     font-weight: bold;
 }
 
+#feature-list-area {
+    display: flex;
+    background-color: hsl(211, 44%, 44%);
+    flex: 1;
+    align-items: left;
+    padding: 1% 2%;
+    margin: 5% 10%;
+    text-align: center;
+    flex-direction:column;
+    font-size: 100%;
+}
 
+#feature-list-area > ul {
+    text-align: left;
+    line-height: 1.8;
+}
+
+#feature-list-area > h2 {
+    font-size: xxx-large;
+    font-family: sans-serif;
+    font-weight: lighter;
+    color: #C7E6FF;
+}
