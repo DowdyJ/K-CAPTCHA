@@ -157,11 +157,66 @@ function processAndSendData() {
     .then((data) => {
         results = [];
         console.log(data);
-        document.querySelector("#score-field").innerHTML = data["score"];
+        
+        document.querySelector("#strokes-per-minute-score").innerHTML = Math.round((1 / combinedStats["key_stroke_time_avg"]) * 60000);
+        document.querySelector("#avg-key-hold-time").innerHTML = Math.round(combinedStats["key_held_avg"]);
+        document.querySelector("#stroke-delay-std-dev").innerHTML = Math.round(combinedStats["std_dev_stroke_delay"]);
+        document.querySelector("#key-hold-time-std-dev").innerHTML = Math.round(combinedStats["std_dev_held_time"]);
+        document.querySelector("#overlap-percentage-score").innerHTML = Math.round(combinedStats["overlap_percent"] * 100);
+        
+        let resultString = "";
+
+        if (data["score"] > 0.05) {
+            resultString = "You are very likely a human.";
+        }
+        else if (data["score"] > 0) {
+            resultString = "You are likely a human.";
+        }
+        else if (data["score"] > -0.05) {
+            resultString = "You are possibly human.";
+        }
+        else if (data["score"] > -0.15) {
+            resultString = "You are most likely a bot.";
+        }
+        else {
+            resultString = "You are almost certainly a bot";
+        }
+
+        document.querySelector("#humanity-result").innerHTML = resultString;
     });
 }
 
 document.querySelector("#submit-data").addEventListener("click", () => {
     processAndSendData();
     document.querySelector("#textbox").value = "";
+});
+
+
+let sampleSentences = [
+"If you are distressed by anything external, the pain is not due to the thing itself, but to your estimate of it; and this you have the power to revoke at any moment.",
+"The soul becomes dyed with the colour of its thoughts.",
+"Never let the future disturb you. You will meet it, if you have to, with the same weapons of reason which today arm you against the present.",
+"How much more grievous are the consequences of anger than the causes of it.",
+"Receive without conceit, release without struggle.",
+"It never ceases to amaze me: we all love ourselves more than other people, but care more about their opinion than our own.",
+"Death smiles at us all; all we can do is smile back.",
+"Take full account of what Excellencies you possess, and in gratitude remember how you would hanker after them, if you had them not.",
+"Death is a release from the impressions of the senses, and from desires that make us their puppets, and from the vagaries of the mind, and from the hard service of the flesh.",
+"Adapt yourself to the life you have been given; and truly love the people with whom destiny has surrounded you.",
+"Neither worse then or better is a thing made by being praised.",
+"The happiness of your life depends upon the quality of your thoughts; therefore guard accordingly.",
+"Nothing is more scandalous than a man that is proud of his humility.",
+"Be your own master, and look at things as a man, as a human being, as a citizen, as a mortal creature.",
+"Does the emerald lose its beauty for lack of admiration?",
+"Give your heart to the trade you have learnt, and draw refreshment from it."
+];
+
+let newIndex = Math.floor(Math.random() * sampleSentences.length)
+
+document.querySelector("#sample-sentence-generator").addEventListener("click", () => {
+    
+    newIndex++
+    newIndex %= sampleSentences.length
+
+    document.querySelector("#sample-sentence").innerHTML = sampleSentences[newIndex];
 });

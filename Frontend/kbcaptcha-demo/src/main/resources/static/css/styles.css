@@ -1,29 +1,39 @@
 body {
-    background-color: darkgray;
+    background-color: #13023C;
+    margin-right: 10%;
+    margin-left: 10%;
+    margin-top: 1%
 }
 
 main {
-    margin-top: 10px;
-    padding-top: 10px;
-    padding-left: 30px;
-    padding-right: 30px;
-    padding-bottom: 40px;
-    background-color:blanchedalmond;
+    margin-top: 1%;
+    margin-bottom: 2%;
+    padding-top: 1%;
+    padding-left: 4%;
+    padding-right: 4%;
+    padding-bottom: 4%;
+    background-color: #758EAB;
+    
 }
 
 nav {
-    background-color: crimson;
+    background-color: #B2617E;
     box-shadow: 0, 0;
     padding: 20px;
     display: flex;
 }
 
 main > h1 {
-    font-family: Lato, monospace, sans-serif;
-    font-size:40px;    
-    color: black;
-    outline-color: black;
-    outline-width: 1px;
+    font-family: sans-serif;
+    font-size:55px;    
+    font-weight:lighter;
+    color: #C7E6FF;
+    background-color: hsl(211, 44%, 44%);
+    margin-left: 25%;
+    margin-right: 25%;
+    margin-bottom: 5%;
+    padding-top: 0.5%;
+    padding-bottom: 0.5%;
     display: flex;
     align-items: center;
     flex: 1;
@@ -34,16 +44,23 @@ main > h1 {
 
 h1 {
     font-family: monospace, sans-serif;
-    font-size:xx-large;
+    font-size:200%;
     color: darkmagenta;
     outline-color: black;
     outline-width: 1px;
 }
 
+ul > li {
+    font-family: sans-serif;
+    font-size: 150%;
+    color: #C7E6FF;
+    
+}
+
 p {
     font-family: sans-serif;
-    color: darkslategray;
-    font-size: medium;
+    color: #C7E6FF;
+    font-size: 150%;
 }
 
 #contact-link {
@@ -56,13 +73,13 @@ nav > a {
     font-family: sans-serif;
     text-decoration: none;
     color:blanchedalmond;
-    background-color: brown;
+    background-color: #F2A0C6;
     margin-right: 10px;
     padding: 10px;
 }
 nav > a:hover {
     color: aliceblue;
-    background-color: gray;
+    background-color: darkmagenta;
 }
 
 a {
@@ -72,16 +89,117 @@ a {
 
 a:hover {
     color: aliceblue;
+}
+
+p#sample-sentence {
+    font-family: 'Times New Roman';
+    font-size:200%;
+}
+
+
+#sample-sentence-container {
+    display: flex;
+    flex: 1;
+    flex-direction:column;
+    margin: 5% 10% 1%;
+    background-color: hsl(211, 44%, 44%);
     
 }
 
+#sample-sentence {
+    align-content: center;
+    text-align: center;
+    margin-left: 10%;
+    margin-right: 10%;
+    margin-bottom: 1%;
+    padding-top: 1%;
+    padding-bottom: 1%;
+}
+
+#sample-sentence-generator {
+    font-size: large;
+    color:black;
+    background-color: white;
+    border-radius: 25px;
+    border: 1px solid darkgray;
+    margin-left: 35%;
+    margin-right: 35%;
+    margin-bottom: 1%;
+    padding-top: 1%;
+    padding-bottom: 1%;
+}
+
+input#textbox:focus {
+    outline: none;
+    border:1px solid gray;
+}
+
 input#textbox {
-    background-color:white;
+    background-color: #C7E6FF;
+    border: 1px solid black;
+    margin-left: 10%;
+    margin-right: 10%;
+    margin-top: 1%;
+    margin-bottom: 2%;
     padding: 10px;
     font-size: large;
     font-family: sans-serif, monospace;
-    width: 80%
+    color:hsl(211, 44%, 44%);
 }
 
+#testing-area {
+    margin-top: 2%;
+    display: flex;
+    flex: 1;
+    flex-direction:column;
+}
+
+#submit-data {
+    font-size: large;
+    color:black;
+    background-color: white;
+    border-radius: 25px;
+    border: 1px solid darkgray;
+    margin-left: 35%;
+    margin-right: 35%;
+    margin-bottom: 1%;
+    padding-top: 1%;
+    padding-bottom: 1%;
+}
+
+#results-area {
+    display: flex;
+    background-color: #13023C;
+    flex: 1;
+    align-items: left;
+    padding: 1% 2%;
+    margin: 5% 25%;
+/*     align-content: center; */
+    text-align: center;
+    flex-direction:column;
+    font-size: 100%;
+}
+
+
+#results-area > h2 {
+    color: white;
+    font-size: 175%
+}
+
+#results-area > p {
+    text-align: left;
+    font-size: 120%;
+    line-height: 0.2;
+/*     padding: 0% 0%; */
+}
+
+#results-area > #humanity-result {
+    margin-top: 20px;
+    border: 2px solid white;
+    padding: 3%;
+    align-self: center;
+    font-size: 170%;
+    font-weight: bold;
+}
 
 

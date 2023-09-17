@@ -19,12 +19,37 @@
             <h1>KB-CAPTCHA Demo</h1>
             <p>Welcome to the demo for the KB-CAPTCHA solution! </p>
             <div>
-                <div>
-                    <label for="textbox">Take the test!</label>
+                <p id="test-label">Take the test!</p>
+                <p id="test-explanation">This test will record your keystrokes and make a prediction on your humanity! It does this by analyzing the following:</p>
+                <ul id="analysis-methods">
+                    <li>Average value and standard deviation for the duration that you hold down keys</li>
+                    <li>Average value and standard deviation for the time between keystrokes</li>
+                    <li>How often your keys overlap when you type (two consecutive keys pressed at the same time)</li>
+                </ul>
+                <p id="test-instructions">This system is content agnostic! 
+                    That means you can type anything into the box. 
+                    However, spamming your keyboard with random input or using very short inputs are unlikely to produce typical typing behavior. 
+                    For best results, try typing a sentence or two. If you need ideas, feel free to try the button below to get one of Marcus Aurelius' quotes!</p>
+                
+                <div id="sample-sentence-container">
+                    <p id="sample-sentence">Click the button to get an example sentence!</p>
+                    <button id="sample-sentence-generator">Generate sentence!</button>
                 </div>
-                <input id="textbox" type="text" />
-                <button id="submit-data">ARE YOU A ROBOT?</button>
-                <p>YOUR RESULTS: <span id="score-field">YOUR SCORE</span></p>
+                
+                <div id="testing-area">
+                    <input id="textbox" type="text" placeholder="Start typing here..." />
+                    <button id="submit-data">Submit</button>
+                </div>
+
+                <div id="results-area">
+                    <h2>Your Results</h2>
+                    <p>Strokes per minute: <span id="strokes-per-minute-score">0</span></p>
+                    <p>Average key hold time: <span id="avg-key-hold-time">N/A</span> milliseconds</p>
+                    <p>Stroke delay standard deviation: <span id="stroke-delay-std-dev">N/A</span> milliseconds</p>
+                    <p>Key hold time standard deviation: <span id="key-hold-time-std-dev">N/A</span> milliseconds</p>
+                    <p>Overlap percentage: <span id="overlap-percentage-score">N/A</span>%</p>
+                    <p id="humanity-result">...</p>
+                </div>
             </div>
             
         </main>
