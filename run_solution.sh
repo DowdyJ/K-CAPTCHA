@@ -1,5 +1,3 @@
-cd KeyInputTester/
-source ./.venv/bin/activate
-python3 main.py &
-cd ../Frontend/kbcaptcha-demo/
-./mvnw spring-boot:run
+docker network create --driver=bridge kbcaptcha-network
+docker run -d -p 5000:5000 --network=kbcaptcha-network --name=kbcaptcha-python-backend kbcaptcha-backend
+docker run -d -p 8080:8080 --network=kbcaptcha-network --name=kbcaptcha-java-frontend kbcaptcha-frontend-demo
