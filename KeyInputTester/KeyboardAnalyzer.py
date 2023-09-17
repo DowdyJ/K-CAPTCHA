@@ -3,6 +3,13 @@ from sklearn.ensemble import IsolationForest
 import numpy as np
 import csv
 
+# key_held_avg 
+# std_dev_held_time 
+# key_stroke_time_avg 
+# std_dev_stroke_delay
+# overlap_percent
+# backspace_percent 
+
 
 class KeyboardAnalyzer:
 
@@ -22,17 +29,17 @@ class KeyboardAnalyzer:
             for row in filedata:
                 i = i + 1
                 print(f"Processing line {i}")
-                data.append([int(float(row[0])), int(float(row[1])), int(float(row[2])), int(float(row[3])), int(float(row[4])), int(float(row[5]))])
+                data.append([float(row[0]), float(row[1]), float(row[2]), float(row[3]), float(row[4])])
                 
             print("Finished.")
 
-            model = IsolationForest(contamination=0.01)
+            model = IsolationForest(contamination="auto", max_samples=2048)
 
             model.fit(data)
             print("Saving to file...")
             with open(KeyboardAnalyzer.model_filename, 'wb') as model_file:
                 pickle.dump(model, model_file)
-
+ 
             print("Finished.")
 
 

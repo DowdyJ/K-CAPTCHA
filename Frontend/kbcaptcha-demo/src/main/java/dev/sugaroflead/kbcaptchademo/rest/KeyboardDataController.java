@@ -19,6 +19,7 @@ import org.apache.hc.core5.http.NameValuePair;
 import org.apache.hc.core5.http.io.HttpClientResponseHandler;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.io.entity.StringEntity;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
@@ -33,20 +34,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.sugaroflead.kbcaptchademo.model.KeyboardData;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:5000")
 public class KeyboardDataController {
-    @PostMapping("/results")
-    public ResponseEntity<Map<String, String>> processResults(@RequestBody List<KeyboardData> keyboardData) {
 
-        // for (KeyboardData kbd : keyboardData) {
-        //     System.out.println(
-        //         "KeyCode:" + kbd.current_character_code + 
-        //         ",\t TimeHeld: " + kbd.time_held + 
-        //         ",\t PrevCharCode: " + kbd.previous_character_code +
-        //         ",\t OverLap: " + kbd.is_overlapping +
-        //         ",\t SLKTime: " + kbd.time_since_last_keypress +
-        //         ",\t AvgTime: " + kbd.average_time_between_strokes);
-        // }
+    @Value("${backendIP:http://localhost:5000}")
+    private String backendIP;
+
+    @PostMapping("/results")
+    public ResponseEntity<Map<String, String>> processResults(@RequestBody KeyboardData keyboardData) {
+
         Map<String, String> response = new HashMap<>();
 
 
@@ -54,7 +49,7 @@ public class KeyboardDataController {
     
         try {
             CloseableHttpClient httpClient = HttpClients.createDefault();
-            HttpPost post = new HttpPost("http://localhost:5000/");
+            HttpPost post = new HttpPost(backendIP);
             post.setHeader("Content-Type", "application/json");
 
             String JsonResult = objectMapper.writeValueAsString(keyboardData);

@@ -2,6 +2,16 @@
 
 -- create csv with entries like this:
 -- PREVIOUS_KEY_CODE, KEY_CODE, IS_OVERLAPPING_WITH_PREVIOUS, DELAY_TO_PRESS, TIME_HELD
+
+--[[
+    MeanHeldTime,               - Derived from held duration
+    StdDevHeldTime,             - Derived from held duration
+    MeanTimeBetweenStrokes,     - Derived from time since keypress
+    StdDevTimeBetweenStrokes,   - Derived from time since keypress
+    OverlapPercentage,          - Derived from is overlapping
+    BackspacePercentage         - Derived from key code
+ ]]
+
 -- 56, 31, 1, 300, 40
 
 local data_keys = {}
@@ -92,46 +102,76 @@ local function get_file_lines(filename)
     return file_lines
 end
 
--- local function preprocess_errors(file_lines)
---     local new_lines = {}
-    
---     for index, line in ipairs(file_lines) do
---         if string.match(line, "^\t") then
---             print("old version: " .. string.gsub(new_lines[#new_lines],"\t", "|"))
---             new_lines[#new_lines] = string.sub(new_lines[#new_lines], 0, string.len(new_lines[#new_lines])) .. line
---             print("new version: " .. string.gsub(string.gsub(new_lines[#new_lines],"\t", "|"), "\n", "#"))
---         else
---             table.insert(new_lines, line)
---         end
---     end
-
---     file_lines = new_lines
-
-
---     for index, value in ipairs(new_lines) do
---         print(value)
---     end
--- end
-
 
 ---comment
 ---@param file_handle file*
 ---@param results table
 local function write_participants_result_to_file(file_handle, results)
     
-    -- {current_character_code, previous_character_code, time_held, time_since_key_press, is_overlapping}
-    local key_delay_total, key_count, key_delay_avg = 0, 0, 0
+    -- {current_character_code, time_held, time_since_key_press, is_overlapping}
+    local key_held_time_total, key_count, key_held_avg, key_stroke_time, key_stroke_time_avg, overlap_count, backspace_count = 0, 0, 0, 0, 0, 0, 0
+    
+
+    local exclusions_held_time_count = 0
+    local exclusions_stroke_delay_count = 0
+
     for _, row in ipairs(results) do
-        key_delay_total = key_delay_total + row[4]
+        if row[2] < 1000 then
+            key_held_time_total = key_held_time_total + row[2]
+        else
+            exclusions_held_time_count = exclusions_held_time_count + 1
+        end
+
+        if row[3] ~= -1 and row[3] < 500 then
+            key_stroke_time = key_stroke_time + row[3]
+        else
+            exclusions_stroke_delay_count = exclusions_stroke_delay_count + 1
+        end
+        
+        overlap_count = overlap_count + row[4]
+        
+        -- 8 is BKSP keycode
+        if row[1] == "8" then
+            backspace_count = backspace_count + 1
+        end
+        
         key_count = key_count + 1
     end
 
-    key_delay_avg = math.floor(key_delay_total / key_count)
-    for _, row in ipairs(results) do
+    key_held_avg = key_held_time_total / (key_count - exclusions_stroke_delay_count)
+    key_stroke_time_avg = key_stroke_time / (key_count - exclusions_stroke_delay_count)
 
-        file_handle:write(row[1] .. "," .. row[2] .. "," .. row[3] .. "," .. row[4] .. "," .. row[5] .. "," .. key_delay_avg .. "\n")
+    local overlap_percent = overlap_count / key_count
+    local backspace_percent = backspace_count / key_count
+
+    local std_dev_held_time, std_dev_stroke_delay = 0, 0
+
+    local squared_variance_key_held_time, squared_variance_key_stroke_delay = 0, 0
+
+
+    for _, row in ipairs(results) do
+        if row[2] < 1000 then
+            squared_variance_key_held_time = squared_variance_key_held_time + (row[2] - key_held_avg)^2
+        end
+
+        if row[3] ~= -1 and row[3] < 500 then
+            squared_variance_key_stroke_delay = squared_variance_key_stroke_delay + (row[3] - key_stroke_time_avg)^2
+        end
     end
 
+    std_dev_held_time = (squared_variance_key_held_time / (key_count - exclusions_held_time_count - 1))^(1/2)
+    std_dev_stroke_delay = (squared_variance_key_stroke_delay / (key_count - exclusions_stroke_delay_count - 1))^(1/2)
+
+
+    --filters for unlikely data
+    if key_held_avg < 50 or std_dev_held_time > 200 or key_stroke_time_avg < 75 or std_dev_stroke_delay > 200 then 
+        return 
+    end
+
+
+    local string_to_write = key_held_avg .. "," .. std_dev_held_time .. "," .. key_stroke_time_avg .. "," .. std_dev_stroke_delay .. "," .. overlap_percent .. "\n"
+    
+    file_handle:write(string_to_write)
 end
 
 
@@ -145,56 +185,55 @@ local function main()
     if result_file == nil then print("Failed to create result file"); return end
     
     local total_number_of_files = #filenames
-    local max_tries = 99999
+
     for i, filename in ipairs(filenames) do repeat
 
         print("[ ".. math.floor(100 * i / total_number_of_files) .."% ] Processing file " .. filename .. " (" .. i .. " / " .. total_number_of_files .. ")")
 
         local file_lines = get_file_lines("../Data/raw/" .. filename)
         if file_lines == nil then print("Failed to load file with filename: " .. filename); break end
+        if #file_lines < 200 then print("Too few data points, skipping."); break end
     
-        --preprocess_errors(file_lines)
-        
+
         -- Create data entry for clean CSV
-        local previous_character_code, current_character_code, is_overlapping, time_held, time_since_key_press
+        local current_character_code, is_overlapping, time_held, time_since_key_press
         local previous_line, current_line
     
         
         local participants_results = {}
     
         for index, line in ipairs(file_lines) do repeat
+            --Skips csv headers
             if index == 1 then
-                break    
+                break
             end
+
+
             current_line = split(line, "\t")
             
+            -- Skips lines which have bugged or incomplete entries
             if #current_line ~= data_keys.COUNT then
                 break
             end
     
-            if previous_line ~= nil and current_line[data_keys.TEST_SECTION_ID] ~= previous_line[data_keys.TEST_SECTION_ID] then
-                previous_line = nil
-                write_participants_result_to_file(result_file, participants_results)
-                participants_results = {}
-            end
-    
             if previous_line ==  nil then
-                previous_character_code = "0"
-                is_overlapping = "0"
-                time_since_key_press = "-1"
+                is_overlapping = 0
+                time_since_key_press = -1
             else
-                previous_character_code = previous_line[data_keys.KEYCODE]
-                is_overlapping = tonumber(previous_line[data_keys.RELEASE_TIME]) > tonumber(current_line[data_keys.PRESS_TIME]) and "1" or "0"
+                is_overlapping = tonumber(previous_line[data_keys.RELEASE_TIME]) > tonumber(current_line[data_keys.PRESS_TIME]) and 1 or 0
                 time_since_key_press = tonumber(current_line[data_keys.PRESS_TIME]) - tonumber(previous_line[data_keys.PRESS_TIME])
             end
     
             current_character_code = current_line[data_keys.KEYCODE]
+
             time_held = tonumber(current_line[data_keys.RELEASE_TIME]) - tonumber(current_line[data_keys.PRESS_TIME])
-    
-            table.insert(participants_results, {current_character_code, previous_character_code, time_held, time_since_key_press, is_overlapping})
+            table.insert(participants_results, {current_character_code, time_held, time_since_key_press, is_overlapping})
     
             previous_line = current_line
+
         until true end
+    
+
     
         write_participants_result_to_file(result_file, participants_results)
     

@@ -1,11 +1,17 @@
 package dev.sugaroflead.kbcaptchademo.model;
 
+//     # key_held_avg 
+//     # std_dev_held_time 
+//     # key_stroke_time_avg 
+//     # std_dev_stroke_delay
+//     # overlap_percent
+//     # backspace_percent 
 
 public class KeyboardData {
-    public int current_character_code;
-    public int previous_character_code;
-    public int time_since_last_keypress;
-    public int time_held;
-    public int is_overlapping;
-    public int average_time_between_strokes;
+    public double key_held_avg;
+    public double std_dev_held_time;
+    public double key_stroke_time_avg;
+    public double std_dev_stroke_delay;
+    public double overlap_percent;
+    public double backspace_percent;
 }

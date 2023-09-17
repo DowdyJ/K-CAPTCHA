@@ -22,23 +22,23 @@ def process_data():
     print(type(parsed_data))
     
     query = []
+
+    # key_held_avg 
+    # std_dev_held_time 
+    # key_stroke_time_avg 
+    # std_dev_stroke_delay
+    # overlap_percent
+    # backspace_percent 
+    entry = parsed_data
     
-    for entry in parsed_data:
-        query.append([entry["current_character_code"], entry["previous_character_code"], entry["time_held"], entry["time_since_last_keypress"], entry["is_overlapping"], entry["average_time_between_strokes"]])
+    query.append([entry["key_held_avg"], entry["std_dev_held_time"], entry["key_stroke_time_avg"], entry["std_dev_stroke_delay"], entry["overlap_percent"]])
 
-    print("It thinking")
-    result = analyzer.model.predict(query)
+    result = analyzer.model.decision_function(query)
+    print(result)
 
-    
-    total = 0
-    for num in result:
-        if num == 1:
-            total += 1
-
-
-    score = total / len(result)
+    score = result[0]
     return jsonify({'result':score}), 200
 
 print("Starting Flask server.")
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
