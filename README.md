@@ -20,13 +20,14 @@ Last, visit http://localhost:8080 in your browser to see the webpage. If it fail
 
 When you're done, you can clean up with:<br>
 
-<code>docker network rm kbcaptcha-network</code><br>
+
 <code>docker stop kbcaptcha-java-frontend</code><br>
 <code>docker stop kbcaptcha-python-backend</code><br>
 <code>docker rm kbcaptcha-java-frontend</code><br>
 <code>docker rm kbcaptcha-python-backend</code><br>
+<code>docker network rm kbcaptcha-network</code><br>
 <code>docker image rm dowdyj/kb-captcha-frontend-demo</code><br>
 <code>docker image rm dowdyj/kb-captcha-backend</code><br>
 
 Or, in one command:<br>
-<code>docker network rm kbcaptcha-network && docker stop kbcaptcha-java-frontend && docker stop kbcaptcha-python-backend && docker rm kbcaptcha-java-frontend && docker rm kbcaptcha-python-backend && docker image rm dowdyj/kb-captcha-frontend-demo && docker image rm dowdyj/kb-captcha-backend</code><br>
+<code>docker stop kbcaptcha-java-frontend && docker stop kbcaptcha-python-backend && docker rm kbcaptcha-java-frontend && docker rm kbcaptcha-python-backend && docker network rm kbcaptcha-network && docker image rm dowdyj/kb-captcha-frontend-demo && docker image rm dowdyj/kb-captcha-backend</code><br>
