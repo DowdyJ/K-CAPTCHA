@@ -140,12 +140,26 @@ local function write_participants_result_to_file(file_handle, results)
     local squared_variance_key_held_time = 0
     
     table.sort(key_stroke_times)
-    local first_quartile_idx = math.floor(#key_stroke_times  / 4)
+    -- local first_quartile_idx = math.floor(#key_stroke_times  / 4)
     local middle_index =  math.floor(#key_stroke_times  / 2)
-    local third_quartile_idx = math.floor((3 * #key_stroke_times)  / 4)
+    -- local third_quartile_idx = math.floor((3 * #key_stroke_times)  / 4)
 
-    local key_stroke_IQR = key_stroke_times[third_quartile_idx] - key_stroke_times[first_quartile_idx]
 
+    local third_quartile, first_quartile
+
+    if math.floor(#key_stroke_times / 2) % 2 == 0 then -- even quartiles
+        local base_index = math.floor(#key_stroke_times / 2) / 2
+        first_quartile = (key_stroke_times[base_index] + key_stroke_times[base_index + 1]) / 2
+        third_quartile = (key_stroke_times[#key_stroke_times - base_index] + key_stroke_times[#key_stroke_times - base_index + 1]) / 2
+    else
+        local base_index = math.ceil(math.floor(#key_stroke_times / 2) / 2)
+        first_quartile = key_stroke_times[base_index]
+        third_quartile = key_stroke_times[#key_stroke_times - base_index + 1]
+    end
+
+    local key_stroke_IQR = third_quartile - first_quartile
+
+    
     if middle_index % 2 == 0 then
         key_stroke_median = (key_stroke_times[middle_index] + key_stroke_times[middle_index + 1]) / 2
     else

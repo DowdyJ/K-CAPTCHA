@@ -83,8 +83,8 @@ function processAndSendData() {
     let totalTimeHeld = 0
 
     let exclusionsTimeHeld = 0
-    let exclusionsTimeBetweenStrokes = 0
 
+    let timeBetweenStrokesList = []
     for (const entry of results) {
         if (entry["is_overlapping"] == 1) {
             overlapCount += 1;
@@ -93,41 +93,62 @@ function processAndSendData() {
             backspaceCount += 1;
         }
 
-        if (entry["time_held"] < 1000) {
+        if (entry["time_held"] < 500) {
             totalTimeHeld += entry["time_held"]
         }
         else {
             exclusionsTimeHeld += 1;
         }
 
-        if (entry["time_since_last_keypress"] < 500) {
-            totalTimeBetweenStrokes += entry["time_since_last_keypress"]
+        if (entry["time_since_last_keypress"] < 1000) {
+            timeBetweenStrokesList.push(entry["time_since_last_keypress"])
         }
-        else {
-            exclusionsTimeBetweenStrokes += 1
-        }
+
     }
 
     let key_held_avg = totalTimeHeld / (results.length - exclusionsTimeHeld)
-    let key_stroke_time_avg = totalTimeBetweenStrokes / (results.length - exclusionsTimeBetweenStrokes)
 
     let square_variance_held_time_total = 0
-    let square_variance_time_between_total = 0
 
     for (const entry of results) {
-        if (entry["time_held"] < 1000) {
+        if (entry["time_held"] < 500) {
             square_variance_held_time_total += (key_held_avg - entry["time_held"])**2
-        }
-        if (entry["time_since_last_keypress"] < 500) {
-            square_variance_time_between_total += (key_stroke_time_avg - entry["time_since_last_keypress"])**2
         }
     }
 
     let std_dev_held_time = (square_variance_held_time_total / (results.length - exclusionsTimeHeld - 1))**(1/2)
-    let std_dev_stroke_delay = (square_variance_time_between_total / (results.length - exclusionsTimeBetweenStrokes - 1))**(1/2)
+    // let std_dev_stroke_delay = (square_variance_time_between_total / (results.length - exclusionsTimeBetweenStrokes - 1))**(1/2)
     let overlap_percent = overlapCount / results.length
     let backspace_percent = backspaceCount / results.length
 
+    timeBetweenStrokesList.sort((a,b) => a-b)
+
+
+
+    let key_stroke_delay_median;
+    let baseIndex = Math.floor(timeBetweenStrokesList.length / 2)
+    let key_stroke_IQR;
+
+    if (timeBetweenStrokesList.length % 2 == 0) {
+        key_stroke_delay_median = (timeBetweenStrokesList[baseIndex] + timeBetweenStrokesList[baseIndex - 1]) / 2;
+    }
+    else {
+        key_stroke_delay_median = timeBetweenStrokesList[baseIndex];
+    }
+
+    if (Math.floor(timeBetweenStrokesList.length / 2) % 2 == 0) {  // The left/right sides of the median have an even number on either side
+        let baseIndex = Math.floor(timeBetweenStrokesList.length / 2) / 2
+        let firstQuartile = (timeBetweenStrokesList[baseIndex] + timeBetweenStrokesList[baseIndex - 1]) / 2
+        let thirdQuartile = (timeBetweenStrokesList[Math.floor(timeBetweenStrokesList.length / 2) + baseIndex] + 
+            timeBetweenStrokesList[Math.floor(timeBetweenStrokesList.length / 2) + baseIndex + 1]);
+        key_stroke_IQR = thirdQuartile - firstQuartile;
+    }
+    else {
+        let baseIndex = Math.floor(Math.floor(timeBetweenStrokesList.length / 2) / 2)
+        let firstQuartile = timeBetweenStrokesList[baseIndex];
+        let thirdQuartile = timeBetweenStrokesList[timeBetweenStrokesList.length - 1 - baseIndex];
+        key_stroke_IQR = thirdQuartile - firstQuartile;
+    }
 
 //     # key_held_avg 
 //     # std_dev_held_time 
@@ -139,8 +160,8 @@ function processAndSendData() {
     let combinedStats = {}
     combinedStats["key_held_avg"] = key_held_avg
     combinedStats["std_dev_held_time"] = std_dev_held_time
-    combinedStats["key_stroke_time_avg"] = key_stroke_time_avg
-    combinedStats["std_dev_stroke_delay"] = std_dev_stroke_delay
+    combinedStats["key_stroke_delay_median"] = key_stroke_delay_median
+    combinedStats["key_stroke_IQR"] = key_stroke_IQR
     combinedStats["overlap_percent"] = overlap_percent
     combinedStats["backspace_percent"] = backspace_percent
 
@@ -156,11 +177,10 @@ function processAndSendData() {
     .then((response) => response.json())
     .then((data) => {
         results = [];
-        console.log(data);
-        
-        document.querySelector("#strokes-per-minute-score").innerHTML = Math.round((1 / combinedStats["key_stroke_time_avg"]) * 60000);
+
+        document.querySelector("#strokes-per-minute-score").innerHTML = Math.round((1 / combinedStats["key_stroke_delay_median"]) * 60000);
         document.querySelector("#avg-key-hold-time").innerHTML = Math.round(combinedStats["key_held_avg"]);
-        document.querySelector("#stroke-delay-std-dev").innerHTML = Math.round(combinedStats["std_dev_stroke_delay"]);
+        document.querySelector("#stroke-delay-iqr").innerHTML = Math.round(combinedStats["key_stroke_IQR"]);
         document.querySelector("#key-hold-time-std-dev").innerHTML = Math.round(combinedStats["std_dev_held_time"]);
         document.querySelector("#overlap-percentage-score").innerHTML = Math.round(combinedStats["overlap_percent"] * 100);
         

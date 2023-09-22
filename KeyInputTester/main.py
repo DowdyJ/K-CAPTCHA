@@ -25,13 +25,13 @@ def process_data():
 
     # key_held_avg 
     # std_dev_held_time 
-    # key_stroke_time_avg 
-    # std_dev_stroke_delay
+    # key_stroke_delay_median 
+    # key_stroke_IQR
     # overlap_percent
-    # backspace_percent 
+    # backspace_percent  - deprecated
     entry = parsed_data
     
-    query.append([entry["key_held_avg"], entry["std_dev_held_time"], entry["key_stroke_time_avg"], entry["std_dev_stroke_delay"], entry["overlap_percent"]])
+    query.append([entry["key_held_avg"], entry["std_dev_held_time"], entry["key_stroke_delay_median"], entry["key_stroke_IQR"], entry["overlap_percent"]])
 
     result = analyzer.model.decision_function(query)
     print(result)

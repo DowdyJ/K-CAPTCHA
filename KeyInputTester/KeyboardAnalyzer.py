@@ -22,7 +22,6 @@ class KeyboardAnalyzer:
         with open('../Data/processed/result.csv', 'r') as csvfile:
             print("Creating model...")
             filedata = csv.reader(csvfile)
-            # current_character_code, previous_character_code, time_held, time_since_key_press, is_overlapping, avg_time
             
             data = []
             i = 0
