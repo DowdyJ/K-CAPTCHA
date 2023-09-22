@@ -1,5 +1,6 @@
 import pickle
 from sklearn.ensemble import IsolationForest
+from sklearn.neighbors import LocalOutlierFactor
 import numpy as np
 import csv
 
@@ -31,10 +32,12 @@ class KeyboardAnalyzer:
                 data.append([float(row[0]), float(row[1]), float(row[2]), float(row[3]), float(row[4])])
                 
             print("Finished.")
-
-            model = IsolationForest(contamination="auto", max_samples=2048)
-
+            model = LocalOutlierFactor(n_neighbors=200, contamination=0.01, novelty=True)
             model.fit(data)
+
+            # model = IsolationForest(contamination=0.01, max_samples=20000)
+
+            # model.fit(data)
             print("Saving to file...")
             with open(KeyboardAnalyzer.model_filename, 'wb') as model_file:
                 pickle.dump(model, model_file)

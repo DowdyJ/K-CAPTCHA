@@ -101,6 +101,7 @@ function processAndSendData() {
         }
 
         if (entry["time_since_last_keypress"] < 1000) {
+            console.log(`Pushing the value ${entry["time_since_last_keypress"]}`)
             timeBetweenStrokesList.push(entry["time_since_last_keypress"])
         }
 
@@ -117,13 +118,13 @@ function processAndSendData() {
     }
 
     let std_dev_held_time = (square_variance_held_time_total / (results.length - exclusionsTimeHeld - 1))**(1/2)
-    // let std_dev_stroke_delay = (square_variance_time_between_total / (results.length - exclusionsTimeBetweenStrokes - 1))**(1/2)
+
     let overlap_percent = overlapCount / results.length
     let backspace_percent = backspaceCount / results.length
 
     timeBetweenStrokesList.sort((a,b) => a-b)
 
-
+    console.log(timeBetweenStrokesList);
 
     let key_stroke_delay_median;
     let baseIndex = Math.floor(timeBetweenStrokesList.length / 2)
@@ -187,13 +188,13 @@ function processAndSendData() {
         let resultString = "";
 
         if (data["score"] > 0.05) {
-            resultString = "You are very likely a human.";
+            resultString = "You are almost certainly a human.";
         }
         else if (data["score"] > 0) {
-            resultString = "You are likely a human.";
+            resultString = "You are very likely a human.";
         }
-        else if (data["score"] > -0.05) {
-            resultString = "You are possibly human.";
+        else if (data["score"] > -0.10) {
+            resultString = "You are likely human.";
         }
         else if (data["score"] > -0.15) {
             resultString = "You are most likely a bot.";
