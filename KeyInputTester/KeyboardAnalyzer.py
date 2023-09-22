@@ -1,6 +1,8 @@
 import pickle
 from sklearn.ensemble import IsolationForest
 from sklearn.neighbors import LocalOutlierFactor
+from sklearn.model_selection import train_test_split
+
 import numpy as np
 import csv
 
@@ -30,12 +32,19 @@ class KeyboardAnalyzer:
                 i = i + 1
                 print(f"Processing line {i}")
                 data.append([float(row[0]), float(row[1]), float(row[2]), float(row[3]), float(row[4])])
-                
+            
+            # training_data, testing_data = train_test_split(data, test_size=0.1, random_state=409)
+            training_data = data
+
             print("Finished.")
-            model = LocalOutlierFactor(n_neighbors=200, contamination=0.01, novelty=True)
-            model.fit(data)
+            model = LocalOutlierFactor(n_neighbors=100, contamination=0.001, novelty=True)
+            model.fit(training_data)
 
             # model = IsolationForest(contamination=0.01, max_samples=20000)
+            # print("Evaluating settings")
+            # res = np.array(model.decision_function(training_data))
+
+            # print(f"Results: avg: {np.mean(res)}, Median: {np.median(res)}, IQR {np.percentile(res, 75) - np.percentile(res, 25)}")
 
             # model.fit(data)
             print("Saving to file...")
