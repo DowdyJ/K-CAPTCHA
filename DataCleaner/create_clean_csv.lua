@@ -109,67 +109,66 @@ end
 local function write_participants_result_to_file(file_handle, results)
     
     -- {current_character_code, time_held, time_since_key_press, is_overlapping}
-    local key_held_time_total, key_count, key_held_avg, key_stroke_time, key_stroke_time_avg, overlap_count, backspace_count = 0, 0, 0, 0, 0, 0, 0
+    local key_held_time_total, key_count, key_held_avg, overlap_count = 0, 0, 0, 0
     
+    local key_stroke_median, key_stroke_IQR
+    local key_stroke_times = {}
 
     local exclusions_held_time_count = 0
-    local exclusions_stroke_delay_count = 0
 
     for _, row in ipairs(results) do
-        if row[2] < 1000 then
+        if row[2] < 500 then
             key_held_time_total = key_held_time_total + row[2]
         else
             exclusions_held_time_count = exclusions_held_time_count + 1
         end
 
-        if row[3] ~= -1 and row[3] < 500 then
-            key_stroke_time = key_stroke_time + row[3]
-        else
-            exclusions_stroke_delay_count = exclusions_stroke_delay_count + 1
+        if row[3] ~= -1 and row[3] < 1000 then
+            table.insert(key_stroke_times, row[3]);
         end
         
         overlap_count = overlap_count + row[4]
         
-        -- 8 is BKSP keycode
-        if row[1] == "8" then
-            backspace_count = backspace_count + 1
-        end
-        
         key_count = key_count + 1
     end
 
-    key_held_avg = key_held_time_total / (key_count - exclusions_stroke_delay_count)
-    key_stroke_time_avg = key_stroke_time / (key_count - exclusions_stroke_delay_count)
+    key_held_avg = key_held_time_total / (key_count - exclusions_held_time_count)
 
     local overlap_percent = overlap_count / key_count
-    local backspace_percent = backspace_count / key_count
+    local std_dev_held_time = 0
 
-    local std_dev_held_time, std_dev_stroke_delay = 0, 0
+    local squared_variance_key_held_time = 0
+    
+    table.sort(key_stroke_times)
+    local first_quartile_idx = math.floor(#key_stroke_times  / 4)
+    local middle_index =  math.floor(#key_stroke_times  / 2)
+    local third_quartile_idx = math.floor((3 * #key_stroke_times)  / 4)
 
-    local squared_variance_key_held_time, squared_variance_key_stroke_delay = 0, 0
+    local key_stroke_IQR = key_stroke_times[third_quartile_idx] - key_stroke_times[first_quartile_idx]
+
+    if middle_index % 2 == 0 then
+        key_stroke_median = (key_stroke_times[middle_index] + key_stroke_times[middle_index + 1]) / 2
+    else
+        key_stroke_median = key_stroke_times[middle_index]
+    end
+
 
 
     for _, row in ipairs(results) do
-        if row[2] < 1000 then
+        if row[2] < 500 then
             squared_variance_key_held_time = squared_variance_key_held_time + (row[2] - key_held_avg)^2
-        end
-
-        if row[3] ~= -1 and row[3] < 500 then
-            squared_variance_key_stroke_delay = squared_variance_key_stroke_delay + (row[3] - key_stroke_time_avg)^2
         end
     end
 
     std_dev_held_time = (squared_variance_key_held_time / (key_count - exclusions_held_time_count - 1))^(1/2)
-    std_dev_stroke_delay = (squared_variance_key_stroke_delay / (key_count - exclusions_stroke_delay_count - 1))^(1/2)
-
 
     --filters for unlikely data
-    if key_held_avg < 50 or std_dev_held_time > 200 or key_stroke_time_avg < 75 or std_dev_stroke_delay > 200 then 
+    if key_held_avg < 50 or std_dev_held_time > 200 or key_stroke_IQR < 25 or key_stroke_median < 50 then 
         return 
     end
 
 
-    local string_to_write = key_held_avg .. "," .. std_dev_held_time .. "," .. key_stroke_time_avg .. "," .. std_dev_stroke_delay .. "," .. overlap_percent .. "\n"
+    local string_to_write = key_held_avg .. "," .. std_dev_held_time .. "," .. key_stroke_median .. "," .. key_stroke_IQR .. "," .. overlap_percent .. "\n"
     
     file_handle:write(string_to_write)
 end
