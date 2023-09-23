@@ -33,19 +33,10 @@ class KeyboardAnalyzer:
                 print(f"Processing line {i}")
                 data.append([float(row[0]), float(row[1]), float(row[2]), float(row[3]), float(row[4])])
             
-            # training_data, testing_data = train_test_split(data, test_size=0.1, random_state=409)
-            training_data = data
-
             print("Finished.")
             model = LocalOutlierFactor(n_neighbors=100, contamination=0.001, novelty=True)
-            model.fit(training_data)
+            model.fit(data)
 
-            # model = IsolationForest(contamination=0.01, max_samples=20000)
-            print("Evaluating settings")
-            # res = np.array(model.decision_function(training_data))
-            # print(f"Results: avg: {np.mean(res)}, StdDev: {np.std(res)}")
-
-            # model.fit(data)
             print("Saving to file...")
             with open(KeyboardAnalyzer.model_filename, 'wb') as model_file:
                 pickle.dump(model, model_file)
