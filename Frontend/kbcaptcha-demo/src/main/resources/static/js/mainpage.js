@@ -187,17 +187,17 @@ function processAndSendData() {
         
         let resultString = "";
 
-        if (data["score"] > 0.05) {
+        if (data["score"] > 0.50) {
             resultString = "You are almost certainly a human.";
         }
         else if (data["score"] > 0) {
             resultString = "You are very likely a human.";
         }
-        else if (data["score"] > -0.10) {
-            resultString = "You are likely human.";
+        else if (data["score"] > -0.50) {
+            resultString = "You are possibly human.";
         }
-        else if (data["score"] > -0.15) {
-            resultString = "You are most likely a bot.";
+        else if (data["score"] > -1.5) {
+            resultString = "You are likely a bot.";
         }
         else {
             resultString = "You are almost certainly a bot";
