@@ -41,10 +41,9 @@ class KeyboardAnalyzer:
             model.fit(training_data)
 
             # model = IsolationForest(contamination=0.01, max_samples=20000)
-            # print("Evaluating settings")
+            print("Evaluating settings")
             # res = np.array(model.decision_function(training_data))
-
-            # print(f"Results: avg: {np.mean(res)}, Median: {np.median(res)}, IQR {np.percentile(res, 75) - np.percentile(res, 25)}")
+            # print(f"Results: avg: {np.mean(res)}, StdDev: {np.std(res)}")
 
             # model.fit(data)
             print("Saving to file...")
