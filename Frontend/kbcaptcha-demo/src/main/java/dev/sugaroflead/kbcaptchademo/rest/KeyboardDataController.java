@@ -77,7 +77,7 @@ public class KeyboardDataController {
             Map<String, Double> resultMap = objectMapper.readValue(responseBody, Map.class);
             Double botLikelihood = resultMap.get("result");
 
-            response.put("score", Math.floor(botLikelihood * 100) + "");
+            response.put("score", botLikelihood + "");
             System.out.println(responseBody);
         }
         catch (Exception e) {
